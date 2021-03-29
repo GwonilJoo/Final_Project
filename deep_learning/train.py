@@ -1,11 +1,21 @@
 from dataloader import *
 from model import *
 
-def train(model, data_loader, criterion, optimizer, args, val_every, device):
+parser = argparse.ArgumentParser(description='cls')
+parser.add_argument('--learning_rate', type=float, default=1e-4)
+parser.add_argument('--num_epochs', type=int, default=10)
+parser.add_argument('--batch_size', type=int, default=100)
+parser.add_argument('--data_dir', type=str, default="../dataset/gwonil/my_cat_dog")
+parser.add_argument('--saved_dir', type=str, default="../dataset/gwonil/my_cat_dog/saved")
+parser.add_argument('--model_path', type=str, default=None)
+parser.add_argument('--random_seed', type=int, default='222')
+args = parser.parse_args()
+
+def train(model, train_loader, val_loader, criterion, optimizer, args, val_every, device):
     print('Start training..')
     best_loss = 9999999
     for epoch in range(args.num_epochs):
-        for i, (imgs, labels) in enumerate(data_loader):
+        for i, (imgs, labels) in enumerate(train_loader):
             imgs, labels = imgs.to(device), labels.to(device)
             outputs = model(imgs) 
             loss = criterion(outputs, labels)   
@@ -17,9 +27,8 @@ def train(model, data_loader, criterion, optimizer, args, val_every, device):
             _, argmax = torch.max(outputs, 1)
             accuracy = (labels == argmax).float().mean()
 
-            if (i+1) % 3 == 0:
-                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'.format(
-                    epoch+1, num_epochs, i+1, len(data_loader), loss.item(), accuracy.item() * 100))
+            print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'.format(
+                epoch+1, args.num_epochs, i+1, len(train_loader), loss.item(), accuracy.item() * 100))
 
         if (epoch + 1) % val_every == 0:
             avrg_loss = validation(epoch + 1, model, val_loader, criterion, device)
@@ -31,7 +40,7 @@ def train(model, data_loader, criterion, optimizer, args, val_every, device):
 
 
 def validation(epoch, model, data_loader, criterion, device):
-    print('Start validation #{}'.format(epoch) )
+    print('Start validation #{}'.format(epoch))
     model.eval()
     with torch.no_grad():
         total = 0
@@ -62,27 +71,18 @@ def save_model(model, saved_dir, file_name='best_model.pt'):
     torch.save(check_point, output_path)
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='cls')
-    parser.add_argument('--learning_rate', type=float, default=1e-4)
-    parser.add_argument('--num_epochs', type=int, default=10)
-    parser.add_argument('--batch_size', type=int, default=100)
-    parser.add_argument('--data_dir', type=str, default='./data/my_cat_dog')
-    parser.add_argument('--save_dir', type=str, default='./saved/resnet-pretrained_1e-3/')
-    parser.add_argument('--model_path', type=str, default=None)
-    parser.add_argument('--random_seed', type=int, default='222')
-    args = parser.parse_args()
-    args.cuda = torch.cuda.is_available()
-    device = torch.device("cuda" if args.cuda else "cpu")
+def main():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
 
-    set_seed(device, args.random_seed)
+    #set_seed(device, args.random_seed)
+    torch.manual_seed(args.random_seed)
 
     # dataset
     train_data = CatDogDataset(data_dir=args.data_dir, mode='train', transform=data_transforms['train'])
     val_data = CatDogDataset(data_dir=args.data_dir, mode='val', transform=data_transforms['val'])
-    
-    # dataloader
+
+     # dataloader
     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, drop_last=True)
     val_loader = DataLoader(val_data, batch_size=args.batch_size, shuffle=False, drop_last=True)
 
@@ -95,7 +95,12 @@ if __name__ == "__main__":
         model.load_state_dict(state_dict)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
 
     val_every = 1
-    train_model(model, train_loader, criterion, optimizer, ,args, val_every, device)
+    train(model, train_loader, val_loader, criterion, optimizer, args, val_every, device)
+
+
+
+if __name__ == "__main__":
+    main()

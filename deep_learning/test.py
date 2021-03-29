@@ -1,6 +1,14 @@
 from dataloader import *
 from model import *
 
+parser = argparse.ArgumentParser(description='cls')
+parser.add_argument('--batch_size', type=int, default=100)
+parser.add_argument('--data_dir', type=str, default='../dataset/gwonil/my_cat_dog')
+parser.add_argument('--model_path', type=str, default='../dataset/gwonil/my_cat_dog/saved/best_model.pt')
+parser.add_argument('--random_seed', type=int, default='222')
+args = parser.parse_args()
+
+
 def test(model, data_loader, device):
     print('Start test..')
     model.eval()
@@ -18,18 +26,9 @@ def test(model, data_loader, device):
     model.train()
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='cls')
-    parser.add_argument('--batch_size', type=int, default=100)
-    parser.add_argument('--data_dir', type=str, default='./data/my_cat_dog')
-    parser.add_argument('--model_path', type=str, default='./saved/SimpleCNN/best_model.pt')
-    parser.add_argument('--random_seed', type=int, default='222')
-    args = parser.parse_args()
-    args.cuda = torch.cuda.is_available()
-    device = torch.device("cuda" if args.cuda else "cpu")
+def main():
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
-
-    set_seed(device, args.random_seed)
 
     # dataset
     test_data = CatDogDataset(data_dir=args.data_dir, mode='test', transform=data_transforms['val'])
@@ -45,3 +44,7 @@ if __name__ == "__main__":
     model.load_state_dict(state_dict)
 
     test(model, test_loader, device)
+
+
+if __name__ == "__main__":
+    main()
