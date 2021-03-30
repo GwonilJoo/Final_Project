@@ -45,7 +45,6 @@ def train(model, train_loader, val_loader, criterion, optimizer, args, val_every
                 save_model(model, args.saved_dir)
 
 
-
 def validation(epoch, model, data_loader, criterion, device):
     print('Start validation #{}'.format(epoch))
     model.eval()
@@ -80,14 +79,14 @@ def save_model(model, saved_dir, file_name='best_model.pt'):
 
 # 클라이언트 접속이 되면 호출된다.
 async def accept(websocket, path, model, train_loader, val_loader, criterion, optimizer, args, val_every, device):
-    await websocket.send("sstart");
+    #await websocket.send("sstart");
     try:
-        await websocket.send("start");
+        #await websocket.send("start");
 
         print('Start training..')
         best_loss = 9999999
         for epoch in range(args.num_epochs):
-            await websocket.send("epoch : " + str(epoch));
+            #await websocket.send("epoch : " + str(epoch));
             for i, (imgs, labels) in enumerate(train_loader):
                 imgs, labels = imgs.to(device), labels.to(device)
                 outputs = model(imgs) 
@@ -100,7 +99,7 @@ async def accept(websocket, path, model, train_loader, val_loader, criterion, op
                 _, argmax = torch.max(outputs, 1)
                 accuracy = (labels == argmax).float().mean()
 
-                await websocket.send("echo : " + str(loss.item()));
+                await websocket.send(str(loss.item()));
                 await asyncio.sleep(1)
 
                 print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'.format(
@@ -114,7 +113,7 @@ async def accept(websocket, path, model, train_loader, val_loader, criterion, op
                     best_loss = avrg_loss
                     save_model(model, args.saved_dir)
 
-        await websocket.send("Done!")
+        #await websocket.send("Done!")
     
     except:
         print("Not working!!")
