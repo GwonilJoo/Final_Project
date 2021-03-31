@@ -4,30 +4,52 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 
+<style>
+	div{
+		float:left;
+	}
+</style>
+
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
 
 google.charts.load('current', {'packages':['corechart']});
 
+//var loss_data = [['iter', 'Loss']]
 var loss_data = [['iter', 'Loss']]
-var i = 1
+var acc_data = [['iter', 'Acc']]
+var loss_iter = 1;
+var acc_iter = 1;
 
-function drawChart(str_loss_data) {
-	loss_data.push([i, Number(str_loss_data)])
-	i += 1
+function drawChart(target_data, chart_name) {
+	var data, line_color;
 
-	console.log(loss_data)
-	console.log(i)
-
-	var data = google.visualization.arrayToDataTable(loss_data);
+	if(chart_name == "loss_chart"){
+		loss_data.push([loss_iter, target_data]);
+		loss_iter += 1;
+		data = google.visualization.arrayToDataTable(loss_data);
+		line_color = "blue";
+	}
+	else{
+		acc_data.push([acc_iter, target_data]);
+		acc_iter += 1;
+		data = google.visualization.arrayToDataTable(acc_data);
+		line_color = "red";
+	}
+	
+	// console.log(loss_data);
+	// console.log(i);
 
 	var options = {
-	  title: 'Company Performance',
+	  title: chart_name,
 	  curveType: 'function',
-	  legend: { position: 'bottom' }
+	  legend: { position: 'bottom' },
+	  series: {
+            0: { color: line_color },
+          }
 	};
 
-	var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+	var chart = new google.visualization.LineChart(document.getElementById(chart_name));
 
 	chart.draw(data, options);
 }
@@ -35,7 +57,8 @@ function drawChart(str_loss_data) {
 
 </head>
 <body>
-<div id="curve_chart" style="width: 900px; height: 500px"></div>
+<div id="loss_chart" style="width: 900px; height: 500px"></div>
+<div id="acc_chart" style="width: 900px; height: 500px"></div>
 <form>
 <!-- 서버로 메시지를 보낼 텍스트 박스 -->
 <input id="textMessage" type="text">
@@ -75,9 +98,13 @@ messageTextArea.value += "error...\n";
 // 소켓 서버로 부터 메시지가 오면 호출되는 함수.
 webSocket.onmessage = function(message){
 // 출력 area에 메시지를 표시한다.
-messageTextArea.value += "Recieve From Server => "+message.data+"\n";
-//google.charts.load('current', {'packages':['corechart']});
-google.charts.setOnLoadCallback(drawChart(message.data));
+messageTextArea.value += "Recieve From Server => "+JSON.parse(message.data).loss+"\n";
+//messageTextArea.value += "Recieve From Server => " + "\n";
+
+var loss = JSON.parse(message.data).loss;
+var acc = JSON.parse(message.data).acc;
+google.charts.setOnLoadCallback(drawChart(loss, "loss_chart"));
+google.charts.setOnLoadCallback(drawChart(acc, "acc_chart"));
 };
 
 

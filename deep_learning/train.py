@@ -4,6 +4,7 @@ from model import *
 import asyncio
 import websockets
 import functools
+import json
 
 parser = argparse.ArgumentParser(description='cls')
 parser.add_argument('--learning_rate', type=float, default=1e-4)
@@ -98,8 +99,10 @@ async def accept(websocket, path, model, train_loader, val_loader, criterion, op
 
                 _, argmax = torch.max(outputs, 1)
                 accuracy = (labels == argmax).float().mean()
-
-                await websocket.send(str(loss.item()));
+                
+                #await websocket.send(str(loss.item()));
+                message = json.dumps({"loss": loss.item(), "acc": accuracy.item()})
+                await websocket.send(message)
                 await asyncio.sleep(1)
 
                 print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'.format(
