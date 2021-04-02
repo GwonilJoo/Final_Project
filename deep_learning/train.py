@@ -101,7 +101,7 @@ async def accept(websocket, path, model, train_loader, val_loader, criterion, op
                 accuracy = (labels == argmax).float().mean()
                 
                 #await websocket.send(str(loss.item()));
-                message = json.dumps({"loss": loss.item(), "acc": accuracy.item()})
+                message = json.dumps({"loss": loss.item(), "acc": accuracy.item(), "epoch": epoch+1, "num_epochs": args.num_epochs, "step": i+1, "total_step": len(train_loader)})
                 await websocket.send(message)
                 await asyncio.sleep(1)
 
