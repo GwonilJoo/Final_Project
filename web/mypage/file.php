@@ -29,9 +29,10 @@ if(isset($_POST['upload']))
 {
   if($_POST['foldername'] != "")
   {
-    $foldername= "../user/"."gwonil"."/".$_POST['foldername']; // gwonil은 유저 이름. mysql에서 가져오기
+    $foldername= "../user/"."Jimin"."/".$_POST['foldername']; // gwonil은 유저 이름. mysql에서 가져오기
+    #$foldername= $_POST['foldername']; // gwonil은 유저 이름. mysql에서 가져오기
     echo $foldername;
-    if(!is_dir($foldername)) mkdir($foldername);
+    if(!is_dir($foldername)) mkdir($foldername, 0777, true);
     foreach($_FILES['files']['name'] as $i => $name)
   {
         if(strlen($_FILES['files']['name'][$i]) > 1)
