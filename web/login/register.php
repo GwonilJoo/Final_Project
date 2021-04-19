@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<?
+<?php
 $connect = mysql_connect("localhost", "root", "apmsetup");
 mysql_set_charset("utf8", $connect);
 mysql_select_db("project_db", $connect);
