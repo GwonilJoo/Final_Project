@@ -77,54 +77,6 @@ def save_model(model, saved_dir, file_name='best_model.pt'):
     torch.save(check_point, output_path)
 
 
-# 클라이언트 접속이 되면 호출된다.
-async def accept(websocket, path, model, train_loader, val_loader, criterion, optimizer, args, val_every, device):
-    #await websocket.send("sstart");
-    try:
-        #await websocket.send("start");
-
-        print('Start training..')
-        best_loss = 9999999
-        for epoch in range(args.num_epochs):
-            #await websocket.send("epoch : " + str(epoch));
-            for i, (imgs, labels) in enumerate(train_loader):
-                imgs, labels = imgs.to(device), labels.to(device)
-                outputs = model(imgs)
-                loss = criterion(outputs, labels)
-
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-
-                _, argmax = torch.max(outputs, 1)
-                accuracy = (labels == argmax).float().mean()
-
-                #await websocket.send(str(loss.item()));
-                message = json.dumps({"loss": loss.item(), "acc": accuracy.item(), "epoch": epoch+1, "num_epochs": args.num_epochs, "step": i+1, "total_step": len(train_loader)})
-                await websocket.send(message)
-                await asyncio.sleep(1)
-
-                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'.format(
-                    epoch+1, args.num_epochs, i+1, len(train_loader), loss.item(), accuracy.item() * 100))
-
-            if (epoch + 1) % val_every == 0:
-                avrg_loss = validation(epoch + 1, model, val_loader, criterion, device)
-                if avrg_loss < best_loss:
-                    print('Best performance at epoch: {}'.format(epoch + 1))
-                    print('Save model in', args.saved_dir)
-                    best_loss = avrg_loss
-                    save_model(model, args.saved_dir)
-
-        #await websocket.send("Done!")
-
-    except:
-        print("Not working!!")
-
-    finally:
-        print("end")
-        #exit(0)
-
-
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)

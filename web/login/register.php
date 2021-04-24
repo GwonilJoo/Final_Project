@@ -1,7 +1,7 @@
 <meta charset="utf-8">
 <?php
-$connect = mysqli_connect("localhost", "root", "", "Final_db");
-#mysql_set_charset("utf8", $connect);
+$connect = mysqli_connect("localhost", "root", "apmsetup", "final_db");
+mysql_set_charset("utf8", $connect);
 
 $sql = "insert into user values";
 $sql = $sql."('{$_REQUEST['id']}', '{$_REQUEST['passwd']}', '{$_REQUEST['email']}')";

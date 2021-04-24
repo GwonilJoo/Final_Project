@@ -1,5 +1,4 @@
-<meta charset="utf-8">
-<?php
+<?
 if(!$_POST['id']){
   echo("
     <script>
@@ -19,11 +18,9 @@ else if(!$_POST['passwd']){
   exit;
 }
 else{
-  $connect = mysqli_connect("localhost", "root", "", "Final_db");
-  if($connect){
-    echo "DB 연결 성공<br>";
-  }
-  #mysqli_set_charset($connect, "utf8");
+  $connect = mysqli_connect("localhost", "root", "apmsetup", "final_db");
+
+  mysqli_set_charset($connect, "utf8");
   $sql = "select * from user where id='{$_POST['id']}' and passwd='{$_POST['passwd']}';";
   $result = mysqli_query($connect, $sql);
   $info = mysqli_fetch_array($result);
@@ -42,15 +39,17 @@ else{
     $_SESSION['id'] = $info[id];
     $_SESSION['passwd'] = $info[passwd];
 
+    echo $_SESSION['id'];
+    echo "<br>";
+    echo $_SESSION['passwd'];
+
     echo("<script type=\"text/javascript\">
-            document.location.href=\"../mypage/file.php\";
+            document.location.href=\"../mypage/main.php\";
           </script>
         ");
-
-    echo "{$_SESSION['id']}<br>";
-    echo "{$_SESSION['passwd']}";
   }
-  
+
   mysqli_close($connect);
 }
 ?>
+<meta charset="utf-8">

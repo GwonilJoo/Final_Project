@@ -1,6 +1,9 @@
+<?session_start();?>
+
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="utf-8">
 <title>Upload Folder using PHP </title>
 </head>
 <body>
@@ -25,24 +28,18 @@ Select Folder to Upload: <input type="file" name="files[]" id="files" multiple d
 </html>
 
 <?php
-echo "메롱<br>";
-echo "{$_SESSION[id]}<br>";
-echo "{$_SESSION['id']}<br>";
-echo "{$_SESSION[passwd]}<br>";
-echo "{$_SESSION['passwd']}<br>";
-echo "메롱<br>";
 if(isset($_POST['upload']))
 {
   if($_POST['foldername'] != "")
   {
-    $foldername= "../../user/".$_SESSION[id]."/".$_POST['foldername']; // gwonil은 유저 이름. mysql에서 가져오기
+    $foldername= "../../dataset/".$_SESSION['id']."/".$_POST['foldername']; // gwonil은 유저 이름. mysql에서 가져오기
     #$foldername= $_POST['foldername']; // gwonil은 유저 이름. mysql에서 가져오기
     echo $foldername;
     if(!is_dir($foldername)) mkdir($foldername, 0777, true);
     foreach($_FILES['files']['name'] as $i => $name)
   {
         if(strlen($_FILES['files']['name'][$i]) > 1)
-        {  
+        {
           move_uploaded_file($_FILES['files']['tmp_name'][$i],$foldername."/".$name);
         }
     }
