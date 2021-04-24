@@ -25,11 +25,17 @@ Select Folder to Upload: <input type="file" name="files[]" id="files" multiple d
 </html>
 
 <?php
+echo "메롱<br>";
+echo "{$_SESSION[id]}<br>";
+echo "{$_SESSION['id']}<br>";
+echo "{$_SESSION[passwd]}<br>";
+echo "{$_SESSION['passwd']}<br>";
+echo "메롱<br>";
 if(isset($_POST['upload']))
 {
   if($_POST['foldername'] != "")
   {
-    $foldername= "../user/"."Jimin"."/".$_POST['foldername']; // gwonil은 유저 이름. mysql에서 가져오기
+    $foldername= "../../user/".$_SESSION[id]."/".$_POST['foldername']; // gwonil은 유저 이름. mysql에서 가져오기
     #$foldername= $_POST['foldername']; // gwonil은 유저 이름. mysql에서 가져오기
     echo $foldername;
     if(!is_dir($foldername)) mkdir($foldername, 0777, true);
