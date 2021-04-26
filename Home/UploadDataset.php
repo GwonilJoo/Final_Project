@@ -1,4 +1,4 @@
-<?session_start();?>
+<?php session_start();?>
 
 <!DOCTYPE html>
 <html>
@@ -12,18 +12,6 @@ Type Folder Name:<input type="text" name="foldername" /><br/><br/>
 Select Folder to Upload: <input type="file" name="files[]" id="files" multiple directory="" webkitdirectory="" moxdirectory="" /><br/><br/>
 <input type="Submit" value="Upload" name="upload" />
 </form>
-
-<form action="#" method="post">
-    Select model<br>
-    <select name='model'>
-        <option value='resnet' selected>Image classification</option>
-        <option value='yolo'>object_detection</option>
-        <option value='mask'>image_segmentation</option>
-    </select>
-
-    <input type="Submit" value="select_model" name="select_model" />
-</form>
-
 </body>
 </html>
 
@@ -37,20 +25,15 @@ if(isset($_POST['upload']))
     echo $foldername;
     if(!is_dir($foldername)) mkdir($foldername, 0777, true);
     foreach($_FILES['files']['name'] as $i => $name)
-  {
+    {
         if(strlen($_FILES['files']['name'][$i]) > 1)
         {
           move_uploaded_file($_FILES['files']['tmp_name'][$i],$foldername."/".$name);
         }
     }
-    echo "Folder is successfully uploaded";
+    echo '<script>alert("Folder is successfully uploaded")</script>';
   }
   else
-      echo "Upload folder name is empty";
-}
-
-if(isset($_POST['select_model']))
-{
-    echo $_POST['model'];
+      echo '<script>alert("Upload folder name is empty")</script>';
 }
 ?>

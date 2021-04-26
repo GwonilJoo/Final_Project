@@ -1,10 +1,10 @@
-<?
-  session_start();
+<?php
+    session_start();
 ?>
 <meta charset="utf-8">
 <style media="screen">
 
-div, ul, li { margin:0; padding:0; }
+div, ul, li { margin:0; padding:0; float:none;}
 
 #blogMenu{
   float: left;
@@ -26,15 +26,6 @@ div, ul, li { margin:0; padding:0; }
 	list-style-type:none;
 }
 
-#blogMenu a {
-	height:16px;
-	color:#f1f1f1;
-	font-family:arial;
-	font-size:20px;
-	padding:0 10px 0 10px;
-	text-decoration:none;
-}
-
 #blogMenu a:hover {
 	color:#D4F4FA;
 	border-bottom:3px solid #FAED7D;
@@ -44,6 +35,15 @@ div, ul, li { margin:0; padding:0; }
 	display:none;
 	position:absolute;
 	background-color:rgb(105,163,255);
+}
+
+#blogMenu a {
+	height:16px;
+	color:#f1f1f1;
+	font-family:arial;
+	font-size:20px;
+	padding:0 10px 0 10px;
+	text-decoration:none;
 }
 
 #blogMenu ul li:hover ul {
@@ -92,37 +92,28 @@ iframe{
 	color:#D4F4FA;
 	border-bottom:3px solid #FAED7D;
 }
-
 </style>
 
 <body>
-  <div id="blogMenu">
-  <ul>
-    <!-- <li>
-      <a target="iframe1" href="mypage/mypage.php">마이페이지</a>
-      <ul>
-        <li><a target="iframe1" href="mypage/mypage.php">수강 목록</a></li>
-        <li><a target="iframe1" href="mypage/course_list.php">수강과목 등록</a></li>
-        <li><a target="iframe1" href="mypage/rental.php">대여 목록</a></li>
-        <li><a target="iframe1" href="mypage/buy.php">구매 목록</a></li>
-        <li><a target="iframe1" href="mypage/sell.php">판매 목록</a></li>
-      </ul>
-    </li> -->
-    <li><a target="iframe1" href="file.php">파일 업로드</a></li>
-    <li><a target="iframe1" href="train_chart.php">학습</a></li>
-  </ul>
-  </div>
-  <div id="log">
-    <ul>
-      <li><a href="../login/Login.php">로그아웃</a></li>
-    </ul>
-  </div>
-  <div id="log">
-    <ul>
-      <li><?echo "{$_SESSION['id']}님&nbsp";?></li>
-    </ul>
-  </div>
-  <div>
-    <iframe name="iframe1" src="file.php" frameborder="1" width=98% height="500"></iframe>
-  </div>
+    <div id="blogMenu">
+        <ul>
+            <li><a target="iframe1" href="MyDir.php">MyDir</a></li>
+            <li><a target="iframe1" href="UploadDataset.php">UploadDataset</a></li>
+            <li><a target="iframe1" href="ClickTrain.php">ClickTrain</a></li>
+        </ul>
+    </div>
+    <div id="log">
+        <ul>
+            <li><a href="../Login/Login.php">Logout</a></li>
+        </ul>
+    </div>
+    <div id="log">
+        <ul>
+            <li><?php echo "{$_SESSION['id']}";?></li>  
+        </ul>
+    </div>
+    <br>
+    <div>
+        <iframe name="iframe1" src="UploadDataset.php" frameborder="1" width=98% height=500></iframe>
+    </div>
 </body>

@@ -1,3 +1,5 @@
+<?php session_start();?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -61,8 +63,8 @@ function drawChart(target_data, chart_name) {
 
 </head>
 <body>
-	<div id="loss_chart" style="width: 900px; height: 500px; float:left"></div>
-	<div id="acc_chart" style="width: 900px; height: 500px; float: right"></div>
+	<div id="loss_chart" style="width: 50%; height: 500px; float:left"></div>
+	<div id="acc_chart" style="width: 50%; height: 500px; float: right"></div>
 	<div class="progress" style="clear:both;">
 		<div class="progress-bar progress-bar-striped active" role="progressbar"
 			aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
@@ -97,6 +99,8 @@ function drawChart(target_data, chart_name) {
 	// 소켓 접속이 되면 호출되는 함수
 	webSocket.onopen = function(message){
 		messageTextArea.value += "Server connect...\n";
+        var model = <?php echo json_encode($_POST['model'])?>;
+        webSocket.send(model);
 	};
 
 // 소켓 접속이 끝나면 호출되는 함수
