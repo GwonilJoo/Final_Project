@@ -85,10 +85,15 @@ async def accept(websocket, path, model, train_loader, val_loader, criterion, op
         data = await websocket.recv()
         print("receive: " + data)
 
+        # num_epochs = data['num_epochs']
+        # model = data['model']
+
+
         print('Start training..')
         best_loss = 9999999
         for epoch in range(args.num_epochs):
             #await websocket.send("epoch : " + str(epoch));
+            total_loss, total_acc, numOfData = 0, 0, 0
             for i, (imgs, labels) in enumerate(train_loader):
                 imgs, labels = imgs.to(device), labels.to(device)
                 outputs = model(imgs)
@@ -101,13 +106,24 @@ async def accept(websocket, path, model, train_loader, val_loader, criterion, op
                 _, argmax = torch.max(outputs, 1)
                 accuracy = (labels == argmax).float().mean()
 
+                total_loss += loss.item()
+                total_acc += accuracy.item()
+                numOfData += len(labels)
+
                 #await websocket.send(str(loss.item()));
-                message = json.dumps({"loss": loss.item(), "acc": accuracy.item(), "epoch": epoch+1, "num_epochs": args.num_epochs, "step": i+1, "total_step": len(train_loader)})
-                await websocket.send(message)
-                await asyncio.sleep(1)
+                # message = json.dumps({"loss": loss.item(), "acc": accuracy.item(), "epoch": epoch+1, "num_epochs": args.num_epochs, "step": i+1, "total_step": len(train_loader)})
+                # await websocket.send(message)
+                # await asyncio.sleep(1)
 
                 print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'.format(
                     epoch+1, args.num_epochs, i+1, len(train_loader), loss.item(), accuracy.item() * 100))
+
+            #await websocket.send(str(loss.item()));
+            total_loss /= numOfData
+            total_acc /= numOfData
+            message = json.dumps({"loss": total_loss, "acc": total_acc, "epoch": epoch+1, "num_epochs": args.num_epochs, "step": i+1, "total_step": len(train_loader)})
+            await websocket.send(message)
+            await asyncio.sleep(1)
 
             if (epoch + 1) % val_every == 0:
                 avrg_loss = validation(epoch + 1, model, val_loader, criterion, device)

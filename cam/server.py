@@ -69,8 +69,6 @@ def threaded(client_socket, addr, queue):
 
 
 def webcam(queue):
-
-
     capture = cv2.VideoCapture(0)
 
     while True:
@@ -78,7 +76,6 @@ def webcam(queue):
 
         if ret == False:
             continue
-
 
         encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),90]
         result, imgencode = cv2.imencode('.jpg', frame, encode_param)
@@ -112,9 +109,7 @@ while True:
 
     print('wait')
 
-
     client_socket, addr = server_socket.accept() 
     start_new_thread(threaded, (client_socket, addr, enclosure_queue,)) 
 
 server_socket.close() 
-
