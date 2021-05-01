@@ -1,4 +1,15 @@
-<?php session_start();?>
+<?php 
+	session_start();
+	if(!$_POST['save_file']){
+		echo("
+		  <script>
+			window.alert('model를 입력하세요.')
+			history.go(-1)
+		  </script>
+		");
+		exit;
+	  }
+?>
 
 <!DOCTYPE html>
 <html>
@@ -21,8 +32,8 @@
 google.charts.load('current', {'packages':['corechart']});
 
 //var loss_data = [['iter', 'Loss']]
-var loss_data = [['iter', 'Loss']]
-var acc_data = [['iter', 'Acc']]
+var loss_data = [['iter', 'Loss']];
+var acc_data = [['iter', 'Acc']];
 var loss_iter = 1;
 var acc_iter = 1;
 
@@ -63,12 +74,19 @@ function drawChart(target_data, chart_name) {
 
 </head>
 <body>
-	<div id="loss_chart" style="width: 50%; height: 500px; float:left"></div>
-	<div id="acc_chart" style="width: 50%; height: 500px; float: right"></div>
+	<div id="loss_chart" style="width: 50%; height: 500px; float:left; border:5px solid gold;"></div>
+	<div id="acc_chart" style="width: 50%; height: 500px; float: right; border:5px solid green;"></div>
+	
 	<div class="progress" style="clear:both;">
-		<div class="progress-bar progress-bar-striped active" role="progressbar"
+		<div class="progress-bar progress-bar-striped active step" role="progressbar"
 			aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-	  		0%
+	  		Step 0%
+		</div>
+	</div>
+	<div class="progress" style="clear:both;">
+		<div class="progress-bar progress-bar-striped active train" role="progressbar"
+			aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+	  		Step 0%
 		</div>
 	</div>
 
@@ -99,8 +117,20 @@ function drawChart(target_data, chart_name) {
 	// 소켓 접속이 되면 호출되는 함수
 	webSocket.onopen = function(message){
 		messageTextArea.value += "Server connect...\n";
-        var model = <?php echo json_encode($_POST['model'])?>;
-        webSocket.send(model);
+
+		alert('server connet');
+
+		var msg = {
+			model: '<?php echo $_POST['model']?>',
+			epochs: '<?php echo $_POST['epochs']?>',
+			batch_size: '<?php echo $_POST['batch_size']?>',
+			save_file: '<?php echo $_POST['save_file']?>',
+			random_seed: '<?php echo $_POST['random_seed']?>'
+		};
+
+		alert('server connet2');
+
+        webSocket.send(JSON.stringify(msg));
 	};
 
 // 소켓 접속이 끝나면 호출되는 함수
@@ -115,20 +145,39 @@ messageTextArea.value += "error...\n";
 
 // 소켓 서버로 부터 메시지가 오면 호출되는 함수.
 webSocket.onmessage = function(message){
-// 출력 area에 메시지를 표시한다.
-messageTextArea.value += "Recieve From Server => "+JSON.parse(message.data).loss+"\n";
-//messageTextArea.value += "Recieve From Server => " + "\n";
+	// 출력 area에 메시지를 표시한다.
+	messageTextArea.value += "Recieve From Server => "+ JSON.parse(message.data).loss+ "\n";
+	//messageTextArea.value += "Recieve From Server => " + "\n";
 
-var dict = JSON.parse(message.data);
-//var loss = JSON.parse(message.data).loss;
-//var acc = JSON.parse(message.data).acc;
-google.charts.setOnLoadCallback(drawChart(dict.loss, "loss_chart"));
-google.charts.setOnLoadCallback(drawChart(dict.acc, "acc_chart"));
+	var dict = JSON.parse(message.data);
+	//var loss = JSON.parse(message.data).loss;
+	//var acc = JSON.parse(message.data).acc;
+	// messageTextArea.value += "Recieve From Server => "+ dict.loss+ "\n";
+	// messageTextArea.value += "Recieve From Server => "+ dict.acc+ "\n";
+	// messageTextArea.value += "Recieve From Server => "+ dict.epoch+ "\n";
+	// messageTextArea.value += "Recieve From Server => "+ dict.epochs+ "\n";
+	// messageTextArea.value += "Recieve From Server => "+ dict.step+ "\n";
+	// messageTextArea.value += "Recieve From Server => "+ dict.total_step+ "\n";
 
-var pcg = parseInt(dict.step/dict.total_step*100);
-document.getElementsByClassName('progress-bar').item(0).setAttribute('aria-valuenow',pcg);
-document.getElementsByClassName('progress-bar').item(0).setAttribute('style','width:'+Number(pcg)+'%');
-document.getElementsByClassName('progress-bar')[0].innerText = String(pcg) + "%";
+	if(dict.type == "chart"){
+		google.charts.setOnLoadCallback(drawChart(dict.loss, "loss_chart"));
+		google.charts.setOnLoadCallback(drawChart(dict.acc, "acc_chart"));
+		
+		var pcg = parseInt(dict.epoch/dict.epochs*100);
+		document.getElementsByClassName('train').item(0).setAttribute('aria-valuenow',pcg);
+		document.getElementsByClassName('train').item(0).setAttribute('style','width:'+Number(pcg)+'%');
+		document.getElementsByClassName('train')[0].innerText = "Epoch " + String(pcg) + "%";
+	}
+	else if(dict.type == "step"){
+		var pcg = parseInt(dict.step/dict.total_step*100);
+		document.getElementsByClassName('step').item(0).setAttribute('aria-valuenow',pcg);
+		document.getElementsByClassName('step').item(0).setAttribute('style','width:'+Number(pcg)+'%');
+		document.getElementsByClassName('step')[0].innerText = String(pcg) + "%";
+
+		// document.getElementsByClassName('step').item(0).setAttribute('aria-valuenow',pcg);
+		// document.getElementsByClassName('step').item(0).setAttribute('style','width:'+Number(pcg)+'%');
+		// document.getElementsByClassName('step')[0].innerText = "Step " + String(pcg) + "%";
+	}
 };
 
 
