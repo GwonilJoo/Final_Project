@@ -110,9 +110,9 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- My select start-->
-                <form action="Chart.php" method="post">
+                <form action="../Home/Chart.php" method="post">
                     <section class="bootstrap-select">
                         <div class="row">
                             <div class="col-12">
@@ -124,12 +124,12 @@
                                         <div class="card-body">
                                             <div class="row">
                                                 <div class="col-md-6 mb-4">
-                                                    <h6>Model</h6>
+                                                    <h6>Field</h6>
                                                     <fieldset class="form-group">
-                                                        <select class="form-select" id="basicSelect">
-                                                            <option>Image Classification</option>
-                                                            <option>Object Detection</option>
-                                                            <option>Segmentation</option>
+                                                        <select class="form-select" id="basicSelect", name='model'>
+                                                            <option value='resnet'>Image Classification</option>
+                                                            <option value='faset-rcnn'>Object Detection</option>
+                                                            <option value='mask-rcnn'>Segmentation</option>
                                                         </select>
                                                     </fieldset>
                                                 </div>
@@ -139,20 +139,21 @@
                                                     <fieldset class="form-group">
                                                         <div class="form-group">
                                                             <input type="text" class="form-control" id="basicInput"
-                                                                placeholder="1 to 10000">
+                                                                placeholder="1 to 10000" name="epochs">
                                                         </div>
                                                     </fieldset>
                                                 </div>
                                                 <div class="col-md-6 mb-4">
                                                     <h6>Batch size</h6>
                                                     <fieldset class="form-group">
-                                                        <select class="form-select" id="basicSelect">
-                                                            <option>1</option>
-                                                            <option>2</option>
-                                                            <option>4</option>
-                                                            <option>8</option>
-                                                            <option>16</option>
-                                                            <option>32</option>
+                                                        <select class="form-select" id="basicSelect", name="batch_size">
+                                                            <option value=1>1</option>
+                                                            <option value=2>2</option>
+                                                            <option value=4>4</option>
+                                                            <option value=8>8</option>
+                                                            <option value=16>16</option>
+                                                            <option value=32>32</option>
+                                                            <option value=100>100</option>
                                                         </select>
                                                     </fieldset>
                                                 </div>
@@ -161,7 +162,7 @@
                                                     <fieldset class="form-group">
                                                         <div class="form-group">
                                                             <input type="text" class="form-control" id="basicInput"
-                                                                placeholder="Input save file name">
+                                                                placeholder="Input save file name", name="save_file">
                                                         </div>
                                                     </fieldset>
                                                 </div>
@@ -170,30 +171,8 @@
                                                     <fieldset class="form-group">
                                                         <div class="form-group">
                                                             <input type="text" class="form-control" id="basicInput"
-                                                                placeholder="random seed">
+                                                                placeholder="random seed", name="random_seed">
                                                         </div>
-                                                    </fieldset>
-                                                </div>
-                                                <div class="col-md-6 mb-4">
-                                                    <h6>Dataset</h6>
-                                                    <p>Use <code>.form-select</code> class for basic select control.</p>
-                                                    <fieldset class="form-group">
-                                                        <select class="form-select" id="basicSelect">
-                                                            <option>IT</option>
-                                                            <option>Blade Runner</option>
-                                                            <option>Thor Ragnarok</option>
-                                                        </select>
-                                                    </fieldset>
-                                                </div>
-                                                <div class="col-md-6 mb-4">
-                                                    <h6>Model for Transfer Learning</h6>
-                                                    <p>Use <code>.form-select</code> class for basic select control.</p>
-                                                    <fieldset class="form-group">
-                                                        <select class="form-select" id="basicSelect">
-                                                            <option>IT</option>
-                                                            <option>Blade Runner</option>
-                                                            <option>Thor Ragnarok</option>
-                                                        </select>
                                                     </fieldset>
                                                 </div>
                                                 <input type="Submit" class="btn btn-primary me-1 mb-1" value="select_model" name="start train" />

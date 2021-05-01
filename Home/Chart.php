@@ -86,7 +86,7 @@ function drawChart(target_data, chart_name) {
 	<div class="progress" style="clear:both;">
 		<div class="progress-bar progress-bar-striped active train" role="progressbar"
 			aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-	  		Step 0%
+	  		Epoch 0%
 		</div>
 	</div>
 
@@ -172,7 +172,7 @@ webSocket.onmessage = function(message){
 		var pcg = parseInt(dict.step/dict.total_step*100);
 		document.getElementsByClassName('step').item(0).setAttribute('aria-valuenow',pcg);
 		document.getElementsByClassName('step').item(0).setAttribute('style','width:'+Number(pcg)+'%');
-		document.getElementsByClassName('step')[0].innerText = String(pcg) + "%";
+		document.getElementsByClassName('step')[0].innerText = "Step" + String(pcg) + "%";
 
 		// document.getElementsByClassName('step').item(0).setAttribute('aria-valuenow',pcg);
 		// document.getElementsByClassName('step').item(0).setAttribute('style','width:'+Number(pcg)+'%');
