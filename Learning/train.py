@@ -199,18 +199,21 @@ async def accept(websocket, path, device):
                 accuracy = (labels == argmax).float().mean()
 
                 total_loss += loss.item()
-                total_acc += accuracy.item()
+                #total_acc += accuracy.item()
+                total_acc += (labels == argmax).float().sum().item()
                 numOfData += len(labels)
+
+                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'.format(
+                    epoch+1, epochs, i+1, len(train_loader), loss.item(), accuracy.item() * 100))
 
                 message = json.dumps({"type": "step", "step": i+1, "total_step": len(train_loader)})
                 await websocket.send(message)
                 await asyncio.sleep(1)
 
-                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'.format(
-                    epoch+1, epochs, i+1, len(train_loader), loss.item(), accuracy.item() * 100))
+                
 
             #await websocket.send(str(loss.item()));
-            total_loss /= numOfData
+            total_loss /= len(train_loader)
             total_acc /= numOfData
             message = json.dumps({"type": "chart", "loss": total_loss, "acc": total_acc, "epoch": epoch+1, "epochs": epochs})
             await websocket.send(message)
