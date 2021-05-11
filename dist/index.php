@@ -1,4 +1,4 @@
-<?session_start();?>
+<?php session_start();?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +27,7 @@
                 <div class="sidebar-header">
                     <div class="d-flex justify-content-between">
                         <div class="logo">
-                            <?
+                            <?php
                                 if($_SESSION['id'] != null){
                                     echo "<a href=\"index.php\">";
                                 }
@@ -47,7 +47,7 @@
                         <li class="sidebar-title">Menu</li>
 
                         <li class="sidebar-item active ">
-                            <?
+                            <?php
                                 if($_SESSION['id'] != null){
                                     echo "<a href=\"index.php\" class='sidebar-link'>";
                                 }
@@ -345,7 +345,7 @@
                                         <img src="assets/images/faces/1.jpg" alt="Face 1">
                                     </div>
                                     <div class="ms-3 name">
-                                        <h5 class="font-bold"><?echo $_SESSION['id']?></h5>
+                                        <h5 class="font-bold"><?php echo $_SESSION['id']?></h5>
                                         <!-- <h6 class="text-muted mb-0"></h6> -->
                                     </div>
                                 </div>

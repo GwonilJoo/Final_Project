@@ -26,7 +26,7 @@
                 <div class="sidebar-header">
                     <div class="d-flex justify-content-between">
                         <div class="logo">
-                            <?
+                            <?php
                                 if($_SESSION['id'] != null){
                                     echo "<a href=\"index.php\">";
                                 }
@@ -46,7 +46,7 @@
                         <li class="sidebar-title">Menu</li>
 
                         <li class="sidebar-item active ">
-                            <?
+                            <?php
                                 if($_SESSION['id'] != null){
                                     echo "<a href=\"index.php\" class='sidebar-link'>";
                                 }
