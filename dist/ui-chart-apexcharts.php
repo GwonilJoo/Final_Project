@@ -295,6 +295,7 @@
                                     0%
                                 </div>
                             </div>
+                            <br>
                             <h6>Epoch</h6>
                             <div class="progress" style="clear:both; height:30px;">
                                 <div class="progress-bar progress-bar-striped active train" role="progressbar"
@@ -378,8 +379,6 @@
             save_file: '<?php echo $_POST['save_file']?>',
             random_seed: '<?php echo $_POST['random_seed']?>'
         };
-
-        alert('server connet2');
 
         webSocket.send(JSON.stringify(msg));
     };

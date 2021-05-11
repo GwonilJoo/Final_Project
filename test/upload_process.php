@@ -10,7 +10,7 @@
 
         $file = $_FILES['upfile'];
         $upload_directory = 'data/';
-        $ext_str = "hwp,xls,doc,xlsx,docx,pdf,jpg,gif,png,txt,ppt,pptx";
+        $ext_str = "hwp,xls,doc,xlsx,docx,pdf,jpg,gif,png,txt,ppt,pptx,zip";
         $allowed_extensions = explode(',', $ext_str);
 
         $max_file_size = 5242880;
@@ -64,8 +64,6 @@
                 echo"<h3>파일 업로드 성공</h3>";
                 echo '<a href="file_list.php">업로드 파일 목록</a>';
             }
-            echo"<h3>파일 업로드 성공</h3>";
-            echo '<a href="file_list.php">업로드 파일 목록</a>';
         }
 
     } 

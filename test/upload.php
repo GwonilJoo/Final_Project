@@ -4,7 +4,7 @@
 
     function formSubmit(f) {
         // 업로드 할 수 있는 파일 확장자를 제한합니다.
-        var extArray = new Array('hwp','xls','doc','xlsx','docx','pdf','jpg','gif','png','txt','ppt','pptx');
+        var extArray = new Array('hwp','xls','doc','xlsx','docx','pdf','jpg','gif','png','txt','ppt','pptx', 'zip');
         var path = document.getElementById("upfile").value;
 
         if(path == "") {
