@@ -19,7 +19,7 @@ else if(!$_POST['passwd']){
   exit;
 }
 else{
-  $connect = mysqli_connect("localhost", "root", "", "Final_db");
+  $connect = mysqli_connect("211.47.119.192", "root", "pass", "Final_db");
   if($connect){
     echo "DB 연결 성공<br>";
   }

@@ -17,7 +17,11 @@ else{
   echo "<script type=\"text/javascript\">alert(\"$res\");</script>";
 
   $foldername = "../Dataset/".$_REQUEST['id'];
-  mkdir($foldername, 0777, true);
+
+  if(!is_dir($foldername)) {
+    umask(0);
+    mkdir($foldername, 0777, true);
+  }
   echo "<script type=\"text/javascript\">alert(\"$foldername\");</script>";
   echo "<script type=\"text/javascript\">document.location.href=\"Login.php\";</script>";
 }

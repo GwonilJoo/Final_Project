@@ -5,6 +5,7 @@ import asyncio
 import websockets
 import functools
 import json
+import pymysql
 
 parser = argparse.ArgumentParser(description='cls')
 parser.add_argument('--learning_rate', type=float, default=1e-4)
@@ -159,9 +160,27 @@ async def accept(websocket, path, device):
         batch_size = int(model_args['batch_size'])
         save_file = model_args['save_file'] + '.pt'
         random_seed = int(model_args['random_seed'])
+        data_dir = model_args['data_dir']
 
-        #data_dir = model_args['data_dir']
-        data_dir = "../Dataset/gwonil/my_cat_dog"
+        user_id = data_dir.split('/')[2]
+        dataset_name = data_dir.split('/')[3]
+
+        print(1)
+        # mysql db connet
+        db_conn = pymysql.connect(
+            user='root',
+            passwd='pass',
+            host='211.47.119.192',
+            db='Final_db',
+            charset='utf8',
+            autocommit=True
+        )
+        print(2)
+        cursor = db_conn.cursor()
+        print(3)
+        sql = "insert into save_weight(user_id, dataset, save_name) values(%s, %s, %s)"
+        cursor.execute(sql, (user_id, dataset_name, save_file))
+        print(4)
 
         #set_seed(device, args.random_seed)
         torch.manual_seed(random_seed)
@@ -225,7 +244,7 @@ async def accept(websocket, path, device):
                 print('Save model in', data_dir + '/saved')
                 best_loss = avrg_loss
                 save_model(model, data_dir + '/saved', save_file)
-
+                
         #await websocket.send("Done!")
 
     except:
@@ -282,7 +301,7 @@ def main():
     # 웹 소켓 서버 생성.호스트는 localhost에 port는 9998로 생성한다.
 
     bound_handler = functools.partial(accept, device=device)
-    start_server = websockets.serve(bound_handler, "localhost", 9998)
+    start_server = websockets.serve(bound_handler, "0.0.0.0", 9998)
     # 비동기로 서버를 대기한다.
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()

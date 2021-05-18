@@ -45,70 +45,30 @@
                 <div class="sidebar-menu">
                     <ul class="menu">
                         <li class="sidebar-title">Menu</li>
-
-                        <li class="sidebar-item active ">
-                            <?php
-                                if($_SESSION['id'] != null){
-                                    echo "<a href=\"index.php\" class='sidebar-link'>";
-                                }
-                                else{
-                                    echo "<a href=\"Login.php\" class='sidebar-link'>";
-                                }
-                            ?>
-                            <!-- <a href="index.html" class='sidebar-link'> -->
-                                <i class="bi bi-grid-fill"></i>
-                                <span>Dashboard</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-title">Forms &amp; Tables</li>
-
                         <li class="sidebar-item  has-sub">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-hexagon-fill"></i>
-                                <span>Form Elements</span>
+                                <span>Inference</span>
                             </a>
                             <ul class="submenu ">
                                 <li class="submenu-item ">
-                                    <a href="form-element-input.html">Input</a>
+                                    <a href="form-element-select.php">Train</a>
                                 </li>
                                 <li class="submenu-item ">
-                                    <a href="form-element-input-group.html">Input Group</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="form-element-select.html">Select</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="form-element-radio.html">Radio</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="form-element-checkbox.html">Checkbox</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="form-element-textarea.html">Textarea</a>
+                                    <a href="Test.php">Test</a>
                                 </li>
                             </ul>
                         </li>
                         <li class="sidebar-item has-sub">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-bar-chart-fill"></i>
-                                <span>Charts</span>
+                                <span>MyDirectory</span>
                             </a>
                             <ul class="submenu">
                                 <li class="submenu-item ">
-                                    <a href="ui-chart-chartjs.html">ChartJS</a>
-                                </li>
-                                <li class="submenu-item active">
-                                    <a href="ui-chart-apexcharts.php">Apexcharts</a>
+                                    <a href="ui-file-uploader.php">File Uploader</a>
                                 </li>
                             </ul>
-                        </li>
-
-                        <li class="sidebar-item  ">
-                            <a href="ui-file-uploader.php" class='sidebar-link'>
-                                <i class="bi bi-cloud-arrow-up-fill"></i>
-                                <span>File Uploader</span>
-                            </a>
                         </li>
                     </ul>
                 </div>

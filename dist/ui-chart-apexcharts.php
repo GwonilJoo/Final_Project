@@ -142,7 +142,15 @@
                 <div class="sidebar-header">
                     <div class="d-flex justify-content-between">
                         <div class="logo">
-                            <a href="index.html"><img src="assets/images/logo/logo.png" alt="Logo" srcset=""></a>
+                            <?php
+                                if($_SESSION['id'] != null){
+                                    echo "<a href=\"index.php\">";
+                                }
+                                else{
+                                    echo "<a href=\"Login.php\">";
+                                }
+                            ?>
+                            <img src="assets/images/logo/logo.png" alt="Logo" srcset=""></a>
                         </div>
                         <div class="toggler">
                             <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
@@ -152,65 +160,31 @@
                 <div class="sidebar-menu">
                     <ul class="menu">
                         <li class="sidebar-title">Menu</li>
-
-                        <li class="sidebar-item  ">
-                            <a href="index.html" class='sidebar-link'>
-                                <i class="bi bi-grid-fill"></i>
-                                <span>Dashboard</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-title">Forms &amp; Tables</li>
-
                         <li class="sidebar-item  has-sub">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-hexagon-fill"></i>
-                                <span>Form Elements</span>
+                                <span>Inference</span>
                             </a>
                             <ul class="submenu ">
                                 <li class="submenu-item ">
-                                    <a href="form-element-input.html">Input</a>
+                                    <a href="form-element-select.php">Train</a>
                                 </li>
                                 <li class="submenu-item ">
-                                    <a href="form-element-input-group.html">Input Group</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="form-element-select.html">Select</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="form-element-radio.html">Radio</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="form-element-checkbox.html">Checkbox</a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="form-element-textarea.html">Textarea</a>
+                                    <a href="Test.php">Test</a>
                                 </li>
                             </ul>
                         </li>
-
-                        <li class="sidebar-item active has-sub">
+                        <li class="sidebar-item has-sub">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-bar-chart-fill"></i>
-                                <span>Charts</span>
+                                <span>MyDirectory</span>
                             </a>
-                            <ul class="submenu active">
+                            <ul class="submenu">
                                 <li class="submenu-item ">
-                                    <a href="ui-chart-chartjs.html">ChartJS</a>
-                                </li>
-                                <li class="submenu-item active">
-                                    <a href="ui-chart-apexcharts.html">Apexcharts</a>
+                                    <a href="ui-file-uploader.php">File Uploader</a>
                                 </li>
                             </ul>
                         </li>
-
-                        <li class="sidebar-item  ">
-                            <a href="ui-file-uploader.html" class='sidebar-link'>
-                                <i class="bi bi-cloud-arrow-up-fill"></i>
-                                <span>File Uploader</span>
-                            </a>
-                        </li>
-
                     </ul>
                 </div>
                 <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
@@ -233,7 +207,7 @@
                         <div class="col-12 col-md-6 order-md-2 order-first">
                             <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                                    <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">Apexcharts</li>
                                 </ol>
                             </nav>
@@ -361,7 +335,7 @@
 <script type="text/javascript">
         // websocket
     // 웹 서버를 접속한다.
-    var webSocket = new WebSocket("ws://localhost:9998");
+    var webSocket = new WebSocket("ws://211.47.119.192:9998");
 
     // 웹 서버와의 통신을 주고 받은 결과를 출력할 오브젝트를 가져옵니다.
     var messageTextArea = document.getElementById("messageTextArea");
@@ -377,7 +351,8 @@
             epochs: '<?php echo $_POST['epochs']?>',
             batch_size: '<?php echo $_POST['batch_size']?>',
             save_file: '<?php echo $_POST['save_file']?>',
-            random_seed: '<?php echo $_POST['random_seed']?>'
+            random_seed: '<?php echo $_POST['random_seed']?>',
+            data_dir: '<?php echo $_POST['dataset']?>'
         };
 
         webSocket.send(JSON.stringify(msg));

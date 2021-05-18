@@ -2,9 +2,9 @@
 
 <?php
 
-    $connect = mysql_connect("localhost", "root", "apmsetup");
+    $connect = mysql_connect("211.47.119.192", "root", "pass");
     mysql_set_charset("utf8", $connect);
-    mysql_select_db("final_db", $connect);
+    mysql_select_db("Final_db", $connect);
 
     if(isset($_FILES['upfile']) && $_FILES['upfile']['name'] != "") {
 
@@ -65,7 +65,6 @@
                 echo '<a href="file_list.php">업로드 파일 목록</a>';
             }
         }
-
     } 
     else {
         echo "<h3>파일이 업로드 되지 않았습니다.</h3>";
@@ -73,5 +72,4 @@
     }
 
     mysql_close();
-
 ?>

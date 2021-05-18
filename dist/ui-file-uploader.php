@@ -1,7 +1,10 @@
-<?session_start();?>
+<?php session_start();?>
 <script type="text/javascript"
 src="https://code.jquery.com/jquery-2.1.0.min.js">
 </script>
+<!-- <script type="text/javascript" src="jquery.js"></script> -->
+<script type="text/javascript" src="jquery.form.js"></script>
+<script type="text/javascript" src="upload_progress.js"></script>
 <script>
     function show_img(img_name, img_path) {
         //alert(img_name)
@@ -60,9 +63,13 @@ function listFolderFiles($dir){
     <link rel="stylesheet" href="assets/vendors/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="assets/css/app.css">
     <link rel="shortcut icon" href="assets/images/favicon.svg" type="image/x-icon">
+    
 
     <!-- for tree -->
     <link rel="stylesheet" href="tree_fontello/css/fontello.css">
+
+    <!-- for progress -->
+    <link rel="stylesheet" type="text/css" href="progress_style.css">
     <style>
       .tree{
         color:#393939;
@@ -108,97 +115,57 @@ function listFolderFiles($dir){
     <div id="app">
         <div id="sidebar" class="active">
             <div class="sidebar-wrapper active">
-    <div class="sidebar-header">
-        <div class="d-flex justify-content-between">
-            <div class="logo">
-                <?
-                    if($_SESSION['id'] != null){
-                        echo "<a href=\"index.php\">";
-                    }
-                    else{
-                        echo "<a href=\"Login.php\">";
-                    }
-                ?>
-                <img src="assets/images/logo/logo.png" alt="Logo" srcset=""></a>
-            </div>
-            <div class="toggler">
-                <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                <div class="sidebar-header">
+                    <div class="d-flex justify-content-between">
+                        <div class="logo">
+                            <?php
+                                if($_SESSION['id'] != null){
+                                    echo "<a href=\"index.php\">";
+                                }
+                                else{
+                                    echo "<a href=\"Login.php\">";
+                                }
+                            ?>
+                            <img src="assets/images/logo/logo.png" alt="Logo" srcset=""></a>
+                        </div>
+                        <div class="toggler">
+                            <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="sidebar-menu">
+                    <ul class="menu">
+                        <li class="sidebar-title">Menu</li>
+                        <li class="sidebar-item  has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-hexagon-fill"></i>
+                                <span>Inference</span>
+                            </a>
+                            <ul class="submenu ">
+                                <li class="submenu-item ">
+                                    <a href="form-element-select.php">Train</a>
+                                </li>
+                                <li class="submenu-item ">
+                                    <a href="Test.php">Test</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item has-sub">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-bar-chart-fill"></i>
+                                <span>MyDirectory</span>
+                            </a>
+                            <ul class="submenu">
+                                <li class="submenu-item ">
+                                    <a href="ui-file-uploader.php">File Uploader</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
             </div>
         </div>
-    </div>
-    <div class="sidebar-menu">
-        <ul class="menu">
-            <li class="sidebar-title">Menu</li>
-            
-            <li class="sidebar-item  ">
-                <?
-                    if($_SESSION['id'] != null){
-                        echo "<a href=\"index.php\" class='sidebar-link'>";
-                    }
-                    else{
-                        echo "<a href=\"Login.php\" class='sidebar-link'>";
-                    }
-                ?>
-                    <i class="bi bi-grid-fill"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            
-            <li class="sidebar-title">Forms &amp; Tables</li>
-            
-            <li class="sidebar-item  has-sub">
-                <a href="#" class='sidebar-link'>
-                    <i class="bi bi-hexagon-fill"></i>
-                    <span>Form Elements</span>
-                </a>
-                <ul class="submenu ">
-                    <li class="submenu-item ">
-                        <a href="form-element-input.html">Input</a>
-                    </li>
-                    <li class="submenu-item ">
-                        <a href="form-element-input-group.html">Input Group</a>
-                    </li>
-                    <li class="submenu-item ">
-                        <a href="form-element-select.html">Select</a>
-                    </li>
-                    <li class="submenu-item ">
-                        <a href="form-element-radio.html">Radio</a>
-                    </li>
-                    <li class="submenu-item ">
-                        <a href="form-element-checkbox.html">Checkbox</a>
-                    </li>
-                    <li class="submenu-item ">
-                        <a href="form-element-textarea.html">Textarea</a>
-                    </li>
-                </ul>
-            </li>
-            
-            <li class="sidebar-item  has-sub">
-                <a href="#" class='sidebar-link'>
-                    <i class="bi bi-bar-chart-fill"></i>
-                    <span>Charts</span>
-                </a>
-                <ul class="submenu ">
-                    <li class="submenu-item ">
-                        <a href="ui-chart-chartjs.html">ChartJS</a>
-                    </li>
-                    <li class="submenu-item ">
-                        <a href="ui-chart-apexcharts.php">Apexcharts</a>
-                    </li>
-                </ul>
-            </li>
-            
-            <li class="sidebar-item active ">
-                <a href="ui-file-uploader.html" class='sidebar-link'>
-                    <i class="bi bi-cloud-arrow-up-fill"></i>
-                    <span>File Uploader</span>
-                </a>
-            </li>
-            
-        </ul>
-    </div>
-    <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
-</div>
         </div>
         <div id="main">
             <header class="mb-3">
@@ -217,7 +184,7 @@ function listFolderFiles($dir){
             <div class="col-12 col-md-6 order-md-2 order-first">
                 <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
                         <li class="breadcrumb-item active" aria-current="page">File Uploader</li>
                     </ol>
                 </nav>
@@ -225,6 +192,30 @@ function listFolderFiles($dir){
         </div>
     </div>
     <section class="section">
+        <div class="row">
+            <div class="col-12 col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">My Upload Files</h5>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body">
+                            <p class="card-text">업로드 해보장
+                            </p>
+                            <!-- File uploader with multiple files upload -->
+                            <form action="upload_file.php"id="myForm" name="frmupload" method="post" enctype="multipart/form-data" >
+                                <input type="file" id="upload_file" name="upload_file"/>
+                                <input type="submit" name='submit_image' value="Submit Comment" onclick='upload_image();'/>
+                            </form>
+                            <div class='progress' id="progress_div">
+                                <div class='bar' id='bar'></div>
+                                <div class='percent' id='percent'>0%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-12 col-md-12">
                 <div class="card">
@@ -264,7 +255,10 @@ function listFolderFiles($dir){
                             <!-- Table with outer spacing -->
                             <div class="table-responsive">
                                 <ul class="tree" style="overflow:auto; height:500px;">
-                                    <?listFolderFiles('../Dataset');?>
+                                    <?php 
+                                        //echo ('../Dataset'.$_SESSION['id'].'/');
+                                        listFolderFiles('../Dataset/'.$_SESSION['id'].'/');
+                                    ?>
                                 </ul>
                             </div>
                         </div>
