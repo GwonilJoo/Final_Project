@@ -40,3 +40,25 @@ class SimpleCNN(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return x
+
+
+def resnet(num_classes):
+    model = torchvision.models.resnet18(pretrained=True)
+    num_ftrs = model.fc.in_features
+    model.fc = nn.Linear(num_ftrs, num_classes)
+
+    return model
+
+
+def faster_rcnn():
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True, 
+                                                    min_size=480)
+    return model
+
+def keypoint():
+    model = torchvision.models.detection.keypointrcnn_resnet50_fpn(pretrained=True).eval()
+    return model
+
+def segmentation():
+    model = torchvision.models.segmentation.deeplabv3_resnet101(pretrained=True).eval()
+    return model

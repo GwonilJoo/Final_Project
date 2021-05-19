@@ -1,6 +1,10 @@
 <?php 
     session_start();
 
+    if(!$_SESSION['id']){
+        echo "<script>alert(\"Please Login...\"); location.href = \"Login.php\";</script>";
+    }
+
     function listFolder($dir){
         $ffs = scandir($dir);
     
@@ -66,7 +70,7 @@
                         <li class="sidebar-item  has-sub">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-hexagon-fill"></i>
-                                <span>Inference</span>
+                                <span>Train&Test</span>
                             </a>
                             <ul class="submenu ">
                                 <li class="submenu-item ">
@@ -104,18 +108,7 @@
                 <div class="page-title">
                     <div class="row">
                         <div class="col-12 col-md-6 order-md-1 order-last">
-                            <h3>Select</h3>
-                            <p class="text-subtitle text-muted">Customize the native &laquo;select&raquo; with custom
-                                CSS that
-                                changes the element’s initial appearance..</p>
-                        </div>
-                        <div class="col-12 col-md-6 order-md-2 order-first">
-                            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Select</li>
-                                </ol>
-                            </nav>
+                            <h3>Train</h3>
                         </div>
                     </div>
                 </div>
@@ -138,6 +131,7 @@
                                                         <select class="form-select" id="basicSelect", name='model'>
                                                             <option value='resnet'>Image Classification</option>
                                                             <option value='faset-rcnn'>Object Detection</option>
+                                                            <option value='faset-rcnn'>KeyPoint Detection</option>
                                                             <option value='mask-rcnn'>Segmentation</option>
                                                         </select>
                                                     </fieldset>
@@ -169,7 +163,10 @@
                                                             <option value=8>8</option>
                                                             <option value=16>16</option>
                                                             <option value=32>32</option>
-                                                            <option value=100>100</option>
+                                                            <option value=64>64</option>
+                                                            <option value=128>128</option>
+                                                            <option value=256>256</option>
+                                                            <option value=512>512</option>
                                                         </select>
                                                     </fieldset>
                                                 </div>

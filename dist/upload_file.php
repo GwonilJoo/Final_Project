@@ -6,9 +6,15 @@ if(isset($_POST['submit_image']))
   $folder="../Dataset/".$_SESSION['id']."/";
   echo "<script type=\"text/javascript\">alert(\"$folder\");</script>";
   move_uploaded_file($_FILES["upload_file"]["tmp_name"], $folder.$_FILES["upload_file"]["name"]);
+  umask(0);
   chmod($folder.$_FILES["upload_file"]["name"],0777);
 
-  include 'unzip.php';
+  $zip = new ZipArchive;
+  if($zip->open($folder.$_FILES["upload_file"]["name"]) === TRUE){
+    $zip->extractTo('./');
+    $zip->close();
+  }
+  //echo "<script>locathon.href(\"#\")</script>"
   exit();
 }
 

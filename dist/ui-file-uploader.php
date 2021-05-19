@@ -1,4 +1,10 @@
-<?php session_start();?>
+<?php 
+session_start();
+
+if(!$_SESSION['id']){
+    echo "<script>alert(\"Please Login...\"); location.href = \"Login.php\";</script>";
+}
+?>
 <script type="text/javascript"
 src="https://code.jquery.com/jquery-2.1.0.min.js">
 </script>
@@ -29,8 +35,8 @@ function listFolderFiles($dir){
         if(is_dir($dir.'/'.$ff)) {
             echo "<li>";
             $id = md5(uniqid(rand(), true));
-            echo "<input type='checkbox' id=".$id." checked='checked'>";
-            echo "<label for=".$id.">".$ff."</label>";
+            echo "<image width=24px height=24px src='folder_img.svg'><input  type='checkbox' id=".$id." checked='checked'> ";
+            echo "<b style='color:#31366D'><label for=".$id.">".$ff."</label></b>";
             echo "<ul>";
             listFolderFiles($dir.'/'.$ff);
             echo "</ul>";
@@ -38,7 +44,15 @@ function listFolderFiles($dir){
         }
         else{
             $img_path = $dir.'/'.$ff;
-            echo "<li onclick='show_img(\"$ff\", \"$img_path\")' style=\"cursor:pointer;\">$ff</li>";
+            $ext = end(explode('.', $ff));
+            $image_type;
+            if ($ext == "png" or $ext == "jpg") {
+                $image_type = "image_img.svg";
+            }
+            else{
+                $image_type = "file_img.svg";
+            }
+            echo "<li onclick='show_img(\"$ff\", \"$img_path\")' style=\"cursor:pointer;\"><image width=15px height=15px src=$image_type> $ff</li>";
         }
     }
 }
@@ -47,6 +61,10 @@ function listFolderFiles($dir){
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="assets/vendors/perfect-scrollbar/perfect-scrollbar.css">
+    <link rel="stylesheet" href="assets/vendors/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <link rel="shortcut icon" href="assets/images/favicon.svg" type="image/x-icon">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Uploader - Mazer Admin Dashboard</title>
@@ -70,6 +88,7 @@ function listFolderFiles($dir){
 
     <!-- for progress -->
     <link rel="stylesheet" type="text/css" href="progress_style.css">
+    
     <style>
       .tree{
         color:#393939;
@@ -86,10 +105,7 @@ function listFolderFiles($dir){
       .tree label{
         cursor: pointer;
       }
-      .tree label:before{
-        content:'\f256';
-        font-family: fontello;
-      }
+
       .tree a{
         text-decoration: none;
         color:#393939;
@@ -105,7 +121,7 @@ function listFolderFiles($dir){
         display: none;
       }
       .tree input[type="checkbox"]:checked+label:before{
-        content:'\f255';
+        content:'\f07b';
         font-family: fontello;
       }
     </style>
@@ -139,7 +155,7 @@ function listFolderFiles($dir){
                         <li class="sidebar-item  has-sub">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-hexagon-fill"></i>
-                                <span>Inference</span>
+                                <span>Train&Test</span>
                             </a>
                             <ul class="submenu ">
                                 <li class="submenu-item ">
@@ -179,15 +195,6 @@ function listFolderFiles($dir){
         <div class="row">
             <div class="col-12 col-md-6 order-md-1 order-last">
                 <h3>File Uploader</h3>
-                <p class="text-subtitle text-muted">File uploader that makes user easier to upload their files</p>
-            </div>
-            <div class="col-12 col-md-6 order-md-2 order-first">
-                <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.php">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">File Uploader</li>
-                    </ol>
-                </nav>
             </div>
         </div>
     </div>
@@ -196,67 +203,57 @@ function listFolderFiles($dir){
             <div class="col-12 col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title">My Upload Files</h5>
+                        <h5 class="card-title">Upload Your Files</h5>
                     </div>
-                    <div class="card-content">
+                    <div class="col-12 col-xl-12">
                         <div class="card-body">
-                            <p class="card-text">업로드 해보장
-                            </p>
                             <!-- File uploader with multiple files upload -->
-                            <form action="upload_file.php"id="myForm" name="frmupload" method="post" enctype="multipart/form-data" >
-                                <input type="file" id="upload_file" name="upload_file"/>
-                                <input type="submit" name='submit_image' value="Submit Comment" onclick='upload_image();'/>
+
+                            <form action="upload_file.php" id="myForm" name="frmupload" method="post" enctype="multipart/form-data" > 
+
+                            <div class="card-content">
+                                <fieldset>
+                                    <div class="input-group">
+                                        <input style="margin-right:15px;" class="form-control" type="file" id="upload_file" name="upload_file"/>
+                                        <input type="submit" class="btn btn-primary rounded-pill" name='submit_image' value="Submit Comment" onclick='upload_image();'/>
+                                    </div>
+                                </fieldset>
+                            </div>
+
                             </form>
-                            <div class='progress' id="progress_div">
+
+                            <div class='progress progress-primary mb-4"' id="progress_div" style="display:block; width:100%; height:23px;">
+                                <div class="progress-bar progress-bar-striped" id="bar" role="progressbar" style="width: 0%"
+                                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"><div id='percent'>0%</div></div>
+                            </div>
+
+                            <!-- <div class='progress' id="progress_div" style="display:block; width:500px; height:23px;">
                                 <div class='bar' id='bar'></div>
                                 <div class='percent' id='percent'>0%</div>
-                            </div>
+                            </div> -->
+                            
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12 col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title">My Upload Files</h5>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-body">
-                            <p class="card-text">Using the basic table up, upload here to see how
-                                <code>.multiple-files-filepond</code>-based basic file uploader look. You can use
-                                <code>allowMultiple</code> or <code>multiple</code> attribute too to implement multiple upload.
-                            </p>
-                            <!-- File uploader with multiple files upload -->
-                            <form name="uploadForm" id="uploadForm" method="post" action="../test/upload_process.php" 
-                                enctype="multipart/form-data" onsubmit="return formSubmit(this);">
-                                <label for="upfile">
-                                    업로드
-                                </label>
-                                <input type="file" name="upfile" id="upfile">
-                                <div class="row">
-                                    <input type="Submit" class="btn btn-primary me-1 mb-1" value="upload file"/>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         <div class="row" id="basic-table">
             <div class="col-12 col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Table with outer spacing</h4>
+                        <h4 class="card-title">File List</h4>
                     </div>
+                    
                     <div class="card-content">
                         <div class="card-body" style="height:550px;">
                             <!-- Table with outer spacing -->
                             <div class="table-responsive">
                                 <ul class="tree" style="overflow:auto; height:500px;">
+                                    
                                     <?php 
                                         //echo ('../Dataset'.$_SESSION['id'].'/');
+                                        
                                         listFolderFiles('../Dataset/'.$_SESSION['id'].'/');
                                     ?>
                                 </ul>
@@ -377,7 +374,7 @@ function listFolderFiles($dir){
     }
 </script>
 
-    <script src="assets/js/main.js"></script>
+<script src="assets/js/main.js"></script>
 </body>
 
 </html>

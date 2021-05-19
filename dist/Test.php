@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+if(!$_SESSION['id']){
+    echo "<script>alert(\"Please Login...\"); location.href = \"Login.php\";</script>";
+}
+
 function show_save_weight(){
     $connect = mysqli_connect("211.47.119.192", "root", "pass", "Final_db");
     // if($connect){
@@ -14,16 +18,28 @@ function show_save_weight(){
     $result = mysqli_query($connect, $sql);
 
     while ($row = mysqli_fetch_array($result)){
-        $path = '../Dataset/'.$row['user_id'].'/'.$row['dataset'].'/saved/'.$row['save_name'];
+        $save_path = '../Dataset/'.$row['user_id'].'/'.$row['dataset'].'/saved/'.$row['save_name'];
+        $test_path = '../Dataset/'.$row['user_id'].'/'.$row['dataset'];
+        $model_name = $row['model'];
         echo "<tr>";
+        echo "<td>".$row['model']."</td>";
         echo "<td>".$row['dataset']."</td>";
         echo "<td>".$row['save_name']."</td>";
-        echo "<td><button class=\"badge bg-success\" onclick=\"draw_chart();\">Test</button></td>";
-        echo "<td><button class=\"badge bg-success\"><a href=$path download>Download</a></button></td>";
+        //$save_path, $test_path, $model_name
+        //echo '<td><button class="badge bg-success" onclick="draw_chart(\''.$save_path.'\', \''.$test_path.'\', \''.$model_name.'\');">Test</button></td>';
+        echo "<td>";
+        echo "<form name=\"inference\" action=\"inference.php\" method=\"post\">";
+        echo "<input type=\"hidden\" name=\"save_path\" value=$save_path>";
+        echo "<input type=\"hidden\" name=\"test_path\" value=$test_path>";
+        echo "<input type=\"hidden\" name=\"model_name\" value=$model_name>";
+        echo "<button type=\"submit\" class=\"badge bg-success\">Test</button>";
+        echo "</form></td>";
+
+        echo "<td><button class=\"badge bg-success\"><a href=$save_path download>Download</a></button></td>";
 
         echo "<td>";
         echo "<form name=\"delete_save_weight\" action=\"delete_save_weight.php\" method=\"post\">";
-        echo "<input type=\"hidden\" name=\"delete_path\" value=$path>";
+        echo "<input type=\"hidden\" name=\"delete_path\" value=$save_path>";
         echo "<button type=\"submit\" class=\"badge bg-danger\">Delete</button>";
         echo "</form></td>";
         echo "</tr>";
@@ -54,6 +70,9 @@ function show_save_weight(){
     <link rel="stylesheet" href="assets/vendors/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="assets/css/app.css">
     <link rel="shortcut icon" href="assets/images/favicon.svg" type="image/x-icon">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -84,7 +103,7 @@ function show_save_weight(){
                         <li class="sidebar-item  has-sub">
                             <a href="#" class='sidebar-link'>
                                 <i class="bi bi-hexagon-fill"></i>
-                                <span>Inference</span>
+                                <span>Train&Test</span>
                             </a>
                             <ul class="submenu ">
                                 <li class="submenu-item ">
@@ -122,28 +141,20 @@ function show_save_weight(){
                 <div class="page-title">
                     <div class="row">
                         <div class="col-12 col-md-6 order-md-1 order-last">
-                            <h3>DataTable</h3>
-                            <p class="text-subtitle text-muted">For user to check they list</p>
-                        </div>
-                        <div class="col-12 col-md-6 order-md-2 order-first">
-                            <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">DataTable</li>
-                                </ol>
-                            </nav>
+                            <h3>Test</h3>
                         </div>
                     </div>
                 </div>
                 <section class="section">
                     <div class="card">
                         <div class="card-header">
-                            Simple Datatable
+                            Save file list
                         </div>
                         <div class="card-body">
                             <table class="table table-hover" id="table1">
                                 <thead>
                                     <tr>
+                                        <th>Model</th>
                                         <th>Dataset</th>
                                         <th>Save weight</th>
                                         <th>Test</th>
@@ -153,45 +164,60 @@ function show_save_weight(){
                                 </thead>
                                 <tbody>
                                     <?php show_save_weight(); ?>
+                                    <tr>
+                                        <td>faster rcnn</td>
+                                        <td>COCO</td>
+                                        <td>pretrained.pth</td>
+                                        <td>
+                                            <form name="inference_other" action="inference_detect.php" method="post">
+                                                <input type="hidden" name="model_name" value="faster_rcnn">
+                                                <button type="submit" class="badge bg-success">Test</button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <button class="badge bg-danger">Download</button>
+                                        </td>
+                                        <td>
+                                            <button class="badge bg-danger">Delete</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>keypoint</td>
+                                        <td>COCO</td>
+                                        <td>pretrained.pth</td>
+                                        <td>
+                                            <form name="inference_other" action="inference_other.php" method="post">
+                                                <input type="hidden" name="model_name" value="keypoint">
+                                                <button type="submit" class="badge bg-success">Test</button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <button class="badge bg-danger">Download</button>
+                                        </td>
+                                        <td>
+                                            <button class="badge bg-danger">Delete</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>segmentation</td>
+                                        <td>COCO</td>
+                                        <td>pretrained.pth</td>
+                                        <td>
+                                            <form name="inference_other" action="inference_other.php" method="post">
+                                                <input type="hidden" name="model_name" value="segmentation">
+                                                <button type="submit" class="badge bg-success">Test</button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <button class="badge bg-danger">Download</button>
+                                        </td>
+                                        <td>
+                                            <button class="badge bg-danger">Delete</button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-
-                    <div class="col-12">
-                        <h6>Testing</h6>
-                        <div class="progress" style="clear:both; height:30px;">
-                            <div class="progress-bar progress-bar-striped active step" role="progressbar"
-                                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-                                0%
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4>Total Accuracy</h4>
-                                </div>
-                                <div class="card-body">
-                                    <div id="total_chart"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-9">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4>Accuracy per Class</h4>
-                                </div>
-                                <div class="card-body">
-                                    <div id="loss_chart"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    
                 </section>
             </div>
 
@@ -217,66 +243,7 @@ function show_save_weight(){
         let table1 = document.querySelector('#table1');
         let dataTable = new simpleDatatables.DataTable(table1);
     </script>
-
     <script src="assets/js/main.js"></script>
 </body>
 
 </html>
-
-<script type="text/javascript">
-
-google.charts.load('current', {'packages':['corechart', 'gauge']});
-
-function total_result(chart_name){
-    var data, line_color;
-
-    var loss_null_data = [['Label', 'Accuracy'], 
-                            ['Accuracy', 83.8]];
-
-    data = google.visualization.arrayToDataTable(loss_null_data);
-    line_color = "blue";
-
-    var options = {
-        width: 250, height: 250,
-        redFrom: 90, redTo: 100,
-        yellowFrom:75, yellowTo: 90,
-        minorTicks: 5
-    };
-
-    var chart = new google.visualization.Gauge(document.getElementById(chart_name));
-
-    chart.draw(data, options);
-}
-
-
-function classify_result(chart_name){
-    var data, line_color;
-
-    var loss_null_data = [['Class', 'Accuracy'], 
-                            ['dog', 84.4], 
-                            ['cat', 87.7],
-                            ['bird', 77.7]];
-
-    data = google.visualization.arrayToDataTable(loss_null_data);
-    line_color = "blue";
-
-    var options = {
-        legend: { position: 'bottom' },
-        vAxis: {
-            ticks: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-        }
-    };
-
-    var chart = new google.visualization.ColumnChart(document.getElementById(chart_name));
-
-    chart.draw(data, options);
-}
-
-
-function draw_chart(){
-    google.charts.setOnLoadCallback(function () {
-        total_result("total_chart");
-        classify_result("loss_chart");
-    });
-}
-</script>

@@ -7,44 +7,6 @@ import functools
 import json
 import pymysql
 
-parser = argparse.ArgumentParser(description='cls')
-parser.add_argument('--learning_rate', type=float, default=1e-4)
-parser.add_argument('--num_epochs', type=int, default=10)
-parser.add_argument('--batch_size', type=int, default=100)
-parser.add_argument('--data_dir', type=str, default="../Dataset/gwonil/my_cat_dog")
-parser.add_argument('--saved_dir', type=str, default="../Dataset/gwonil/my_cat_dog/saved")
-parser.add_argument('--model_path', type=str, default=None)
-parser.add_argument('--random_seed', type=int, default='222')
-args = parser.parse_args()
-
-
-def train(model, train_loader, val_loader, criterion, optimizer, args, val_every, device):
-    print('Start training..')
-    best_loss = 9999999
-    for epoch in range(args.num_epochs):
-        for i, (imgs, labels) in enumerate(train_loader):
-            imgs, labels = imgs.to(device), labels.to(device)
-            outputs = model(imgs)
-            loss = criterion(outputs, labels)
-
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-            _, argmax = torch.max(outputs, 1)
-            accuracy = (labels == argmax).float().mean()
-
-            print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'.format(
-                epoch+1, args.num_epochs, i+1, len(train_loader), loss.item(), accuracy.item() * 100))
-
-        if (epoch + 1) % val_every == 0:
-            avrg_loss = validation(epoch + 1, model, val_loader, criterion, device)
-            if avrg_loss < best_loss:
-                print('Best performance at epoch: {}'.format(epoch + 1))
-                print('Save model in', args.saved_dir)
-                best_loss = avrg_loss
-                save_model(model, args.saved_dir)
-
 
 def validation(epoch, model, data_loader, criterion, device):
     print('Start validation #{}'.format(epoch))
@@ -61,12 +23,13 @@ def validation(epoch, model, data_loader, criterion, device):
             total += imgs.size(0)
             _, argmax = torch.max(outputs, 1)
             correct += (labels == argmax).sum().item()
-            total_loss += loss
+            total_loss += loss.item()
             cnt += 1
         avrg_loss = total_loss / cnt
-        print('Validation #{}  Accuracy: {:.2f}%  Average Loss: {:.4f}'.format(epoch, correct / total * 100, avrg_loss))
+        avrg_acc = correct / total
+        print('Validation #{}  Accuracy: {:.2f}%  Average Loss: {:.4f}'.format(epoch, avrg_acc*100, avrg_loss))
     model.train()
-    return avrg_loss
+    return avrg_loss, avrg_acc
 
 
 def save_model(model, saved_dir, file_name='best_model.pt'):
@@ -75,90 +38,23 @@ def save_model(model, saved_dir, file_name='best_model.pt'):
         'net': model.state_dict()
     }
     output_path = os.path.join(saved_dir, file_name)
-    torch.save(check_point, output_path)
-
-
-# 클라이언트 접속이 되면 호출된다.
-# async def accept(websocket, path, model, train_loader, val_loader, criterion, optimizer, args, val_every, device):
-#     #await websocket.send("sstart");
-#     try:
-#         #await websocket.send("start");
-#         data = await websocket.recv()
-#         model_args = json.loads(data)
-#         print("receive: ", model_args)
-
-#         model_name = model_args["model"]
-#         epochs = model_args['epochs']
-#         batch_size = model_args['batch_size']
-#         save_file = model_args['save_file']
-#         random_seed = model_args['random_seed']
-
-#         print('Start training..')
-#         best_loss = 9999999
-#         for epoch in range(args.num_epochs):
-#             #await websocket.send("epoch : " + str(epoch));
-#             total_loss, total_acc, numOfData = 0, 0, 0
-#             for i, (imgs, labels) in enumerate(train_loader):
-#                 imgs, labels = imgs.to(device), labels.to(device)
-#                 outputs = model(imgs)
-#                 loss = criterion(outputs, labels)
-
-#                 optimizer.zero_grad()
-#                 loss.backward()
-#                 optimizer.step()
-
-#                 _, argmax = torch.max(outputs, 1)
-#                 accuracy = (labels == argmax).float().mean()
-
-#                 total_loss += loss.item()
-#                 total_acc += accuracy.item()
-#                 numOfData += len(labels)
-
-#                 message = json.dumps({"loss": loss.item(), "acc": accuracy.item(), "epoch": epoch+1, "num_epochs": args.num_epochs, "step": i+1, "total_step": len(train_loader)})
-#                 await websocket.send(message)
-#                 await asyncio.sleep(1)
-
-#                 print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}, Accuracy: {:.2f}%'.format(
-#                     epoch+1, args.num_epochs, i+1, len(train_loader), loss.item(), accuracy.item() * 100))
-
-#             #await websocket.send(str(loss.item()));
-#             total_loss /= numOfData
-#             total_acc /= numOfData
-#             # message = json.dumps({"loss": total_loss, "acc": total_acc, "epoch": epoch+1, "num_epochs": args.num_epochs, "step": i+1, "total_step": len(train_loader)})
-#             # await websocket.send(message)
-#             # await asyncio.sleep(1)
-
-#             if (epoch + 1) % val_every == 0:
-#                 avrg_loss = validation(epoch + 1, model, val_loader, criterion, device)
-#                 if avrg_loss < best_loss:
-#                     print('Best performance at epoch: {}'.format(epoch + 1))
-#                     print('Save model in', args.saved_dir)
-#                     best_loss = avrg_loss
-#                     save_model(model, args.saved_dir)
-
-#         #await websocket.send("Done!")
-
-#     except:
-#         print("Not working!!")
-
-#     finally:
-#         print("end")
-#         #exit(0)
+    torch.save(model, output_path)
 
 
 #클라이언트 접속이 되면 호출된다.
 async def accept(websocket, path, device):
     #await websocket.send("sstart");
-    try:
+    #try:
         #await websocket.send("start");
         data = await websocket.recv()
         model_args = json.loads(data)
         print("receive: ", model_args)
 
+        
         model_name = model_args['model']
         epochs = int(model_args['epochs'])
         batch_size = int(model_args['batch_size'])
-        save_file = model_args['save_file'] + '.pt'
+        save_file = model_args['save_file']
         random_seed = int(model_args['random_seed'])
         data_dir = model_args['data_dir']
 
@@ -178,24 +74,31 @@ async def accept(websocket, path, device):
         print(2)
         cursor = db_conn.cursor()
         print(3)
-        sql = "insert into save_weight(user_id, dataset, save_name) values(%s, %s, %s)"
-        cursor.execute(sql, (user_id, dataset_name, save_file))
+        sql = "insert into save_weight(user_id, dataset, save_name, model) values(%s, %s, %s, %s)"
+        cursor.execute(sql, (user_id, dataset_name, save_file + '_best.pth', model_name))
+
+        sql = "insert into save_weight(user_id, dataset, save_name, model) values(%s, %s, %s, %s)"
+        cursor.execute(sql, (user_id, dataset_name, save_file + '_last.pth', model_name))
         print(4)
 
         #set_seed(device, args.random_seed)
         torch.manual_seed(random_seed)
 
         # dataset
-        train_data = CatDogDataset(data_dir=data_dir, mode='train', transform=data_transforms['train'])
-        val_data = CatDogDataset(data_dir=data_dir, mode='val', transform=data_transforms['val'])
+        # train_data = CatDogDataset(data_dir=data_dir, mode='train', transform=data_transforms['train'])
+        # val_data = CatDogDataset(data_dir=data_dir, mode='val', transform=data_transforms['val'])
 
         # dataloader
-        train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True, drop_last=True)
-        val_loader = DataLoader(val_data, batch_size=batch_size, shuffle=False, drop_last=True)
+        # train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True, drop_last=True)
+        # val_loader = DataLoader(val_data, batch_size=batch_size, shuffle=False, drop_last=True)
+        class_names, train_loader = Train_loader(data_dir, batch_size)
+        class_names, val_loader = Valid_loader(data_dir, batch_size)
+
+        model = resnet(len(class_names)).to(device)
 
         # model & function
         #if model_name == "resnet":
-        model = SimpleCNN().to(device)
+        #model = SimpleCNN().to(device)
 
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(model.parameters())
@@ -234,64 +137,30 @@ async def accept(websocket, path, device):
             #await websocket.send(str(loss.item()));
             total_loss /= len(train_loader)
             total_acc /= numOfData
-            message = json.dumps({"type": "chart", "loss": total_loss, "acc": total_acc, "epoch": epoch+1, "epochs": epochs})
-            await websocket.send(message)
-            await asyncio.sleep(1)
 
-            avrg_loss = validation(epoch + 1, model, val_loader, criterion, device)
+            avrg_loss, avrg_acc = validation(epoch + 1, model, val_loader, criterion, device)
             if avrg_loss < best_loss:
                 print('Best performance at epoch: {}'.format(epoch + 1))
                 print('Save model in', data_dir + '/saved')
                 best_loss = avrg_loss
-                save_model(model, data_dir + '/saved', save_file)
-                
-        #await websocket.send("Done!")
+                torch.save(model.state_dict(), data_dir+'/saved/'+ save_file + '_best.pth')
+            
+            torch.save(model.state_dict(), data_dir+'/saved/'+ save_file + '_last.pth')
 
-    except:
-        print("Not working!!")
+            message = json.dumps({"type": "chart", "train_loss": total_loss, "train_acc": total_acc, 
+                                "val_loss": avrg_loss, "val_acc": avrg_acc, "epoch": epoch+1, "epochs": epochs})
+            await websocket.send(message)
+            await asyncio.sleep(1)
+        
+        message = json.dumps({"type": 'finish'})
+        await websocket.send(message) 
 
-    finally:
-        print("end")
-        #exit(0)
+    # except:
+    #     print("Not working!!")
 
-
-# def main():
-#     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-#     print(device)
-
-#     #set_seed(device, args.random_seed)
-#     torch.manual_seed(args.random_seed)
-
-#     # dataset
-#     train_data = CatDogDataset(data_dir=args.data_dir, mode='train', transform=data_transforms['train'])
-#     val_data = CatDogDataset(data_dir=args.data_dir, mode='val', transform=data_transforms['val'])
-
-#     # dataloader
-#     train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, drop_last=True)
-#     val_loader = DataLoader(val_data, batch_size=args.batch_size, shuffle=False, drop_last=True)
-
-#     # model & function
-#     model = SimpleCNN().to(device)
-
-#     if args.model_path is not None:
-#         checkpoint = torch.load(args.model_path)
-#         state_dict = checkpoint['net']
-#         model.load_state_dict(state_dict)
-
-#     criterion = nn.CrossEntropyLoss()
-#     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
-
-#     val_every = 1
-#     #train(model, train_loader, val_loader, criterion, optimizer, args, val_every, device)
-
-#     # 웹 소켓 서버 생성.호스트는 localhost에 port는 9998로 생성한다.
-
-#     bound_handler = functools.partial(accept, model=model, train_loader=train_loader, val_loader=val_loader,
-#                                         criterion=criterion, optimizer=optimizer, args=args, val_every=val_every, device=device)
-#     start_server = websockets.serve(bound_handler, "localhost", 9998)
-#     # 비동기로 서버를 대기한다.
-#     asyncio.get_event_loop().run_until_complete(start_server)
-#     asyncio.get_event_loop().run_forever()
+    # finally:
+    #     print("end")
+    #     #exit(0)
 
 
 def main():

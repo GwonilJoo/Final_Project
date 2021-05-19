@@ -9,11 +9,11 @@ $sql = $sql."('{$_REQUEST['id']}', '{$_REQUEST['passwd']}', '{$_REQUEST['email']
 $result = mysqli_query($connect, $sql);
 
 if(!$result){
-  $res = "회원가입 실패!";
+  $res = "Fail to sign up!";
   echo "<script type=\"text/javascript\">alert(\"$res\"); document.location.href=\"Memform.html\";</script>";
 }
 else{
-  $res = "회원가입 성공!";
+  $res = "Success to sign up!";
   echo "<script type=\"text/javascript\">alert(\"$res\");</script>";
 
   $foldername = "../Dataset/".$_REQUEST['id'];
@@ -22,7 +22,6 @@ else{
     umask(0);
     mkdir($foldername, 0777, true);
   }
-  echo "<script type=\"text/javascript\">alert(\"$foldername\");</script>";
   echo "<script type=\"text/javascript\">document.location.href=\"Login.php\";</script>";
 }
 
